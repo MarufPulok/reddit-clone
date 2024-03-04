@@ -3,6 +3,7 @@ import React from "react";
 import { Icons } from "./Icons";
 import { buttonVariants } from "./ui/Button";
 import { getAuthSession } from "@/lib/auth";
+import UserAccountNav from "./UserAccountNav";
 
 export default async function Navbar() {
   const session = await getAuthSession();
@@ -18,7 +19,7 @@ export default async function Navbar() {
         {/* TODO: Search bar */}
 
         {session?.user ? (
-          <p>youre logged in</p>
+          <UserAccountNav user={session.user} />
         ) : (
           <Link href="/sign-in" className={buttonVariants()}>
             Sign In
