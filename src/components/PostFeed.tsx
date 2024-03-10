@@ -60,10 +60,17 @@ export default function PostFeed({
 
         if (index === posts.length - 1) {
           return <li key={post.id} ref={ref}>
-            <Post/>
+            <Post commentAmt={post.comments.length} post={post} subredditName={post.subreddit.name}/>
           </li>;
         } else {
-            return <Post key={index}/>
+            return (
+              <Post
+                commentAmt={post.comments.length}
+                key={post.id}
+                subredditName={post.subreddit.name}
+                post={post}
+              />
+            );
         }
       })}
     </ul>
