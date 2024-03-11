@@ -59,18 +59,28 @@ export default function PostFeed({
         );
 
         if (index === posts.length - 1) {
-          return <li key={post.id} ref={ref}>
-            <Post commentAmt={post.comments.length} post={post} subredditName={post.subreddit.name}/>
-          </li>;
-        } else {
-            return (
+          return (
+            <li key={post.id} ref={ref}>
               <Post
+                currentVote={currentVote}
+                votesAmt={votesAmt}
                 commentAmt={post.comments.length}
-                key={post.id}
-                subredditName={post.subreddit.name}
                 post={post}
+                subredditName={post.subreddit.name}
               />
-            );
+            </li>
+          );
+        } else {
+          return (
+            <Post
+              votesAmt={votesAmt}
+              currentVote={currentVote}
+              commentAmt={post.comments.length}
+              key={post.id}
+              subredditName={post.subreddit.name}
+              post={post}
+            />
+          );
         }
       })}
     </ul>
