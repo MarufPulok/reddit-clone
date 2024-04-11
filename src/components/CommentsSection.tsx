@@ -56,7 +56,11 @@ export default async function CommentsSection({
             return (
               <div key={topLevelcomment.id} className="flex flex-col">
                 <div className="mb-2">
-                  <PostComment comment={topLevelcomment} />
+                  <PostComment 
+                  postId={postId}
+                  votesAmt={topLevelcommentVotesAmt}
+                  currentVote={topLevelcommentVote}
+                  comment={topLevelcomment} />
                 </div>
               </div>
             );
