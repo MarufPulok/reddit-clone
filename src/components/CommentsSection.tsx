@@ -63,7 +63,7 @@ export default async function CommentsSection({
                   comment={topLevelcomment} />
                 </div>
                 {topLevelcomment.replies.sort((a, b) => b.votes.length - a.votes.length).map((reply) => {
-                  const replyVotesAmt = topLevelcomment.votes.reduce(
+                  const replyVotesAmt = reply.votes.reduce(
                     (acc, vote) => {
                       if (vote.type === "UP") return acc + 1;
                       if (vote.type === "DOWN") return acc - 1;
@@ -72,7 +72,7 @@ export default async function CommentsSection({
                     0
                   );
 
-                  const replyVote = topLevelcomment.votes.find(
+                  const replyVote = reply.votes.find(
                     (vote) => vote.userId === session?.user.id
                   );
                   return <div key={reply.id} className="ml-2 py-2 pl-4 border-l-2 border-zinc-200">
