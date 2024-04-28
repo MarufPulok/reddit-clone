@@ -1,14 +1,20 @@
 "use client";
 
+import { toast } from "@/hooks/use-toast";
 import { UsernameRequest, UsernameValidator } from "@/lib/validators/username";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { User } from "@prisma/client";
+import { useMutation } from "@tanstack/react-query";
+import axios, { AxiosError } from "axios";
+import { useRouter } from "next/navigation";
 import React from "react";
 import { useForm } from "react-hook-form";
+import { Button } from "./ui/Button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "./ui/card";
@@ -20,6 +26,7 @@ interface UsernameFormProps {
 }
 
 export default function UsernameForm({ user }: UsernameFormProps) {
+  const router = useRouter();
   const {
     register,
     handleSubmit,
@@ -31,10 +38,41 @@ export default function UsernameForm({ user }: UsernameFormProps) {
     },
   });
 
-  const onSubmit = async (data: UsernameRequest) => {};
+  const { mutate: updateUsername, isLoading } = useMutation({
+    mutationFn: async ({ name }: UsernameRequest) => {
+      const payload: UsernameRequest = { name };
+
+      const { data } = await axios.patch("/api/username", payload);
+
+      return data;
+    },
+    onError: (err) => {
+      if (err instanceof AxiosError) {
+        if (err?.response?.status === 409) {
+          return toast({
+            title: "Username already taken",
+            description: "Please choose a different username.",
+            variant: "destructive",
+          });
+        }
+      }
+
+      return toast({
+        title: "There was an error",
+        description: "Couldn't update username. Try again later",
+        variant: "destructive",
+      });
+    },
+    onSuccess: () => {
+      toast({
+        description: "Your username has been updated",
+      });
+      router.refresh();
+    },
+  });
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <form onSubmit={handleSubmit((e) => updateUsername(e))}>
       <Card>
         <CardHeader>
           <CardTitle>Your username</CardTitle>
@@ -61,6 +99,9 @@ export default function UsernameForm({ user }: UsernameFormProps) {
             )}
           </div>
         </CardContent>
+        <CardFooter>
+          <Button isLoading={isLoading}>Change name</Button>
+        </CardFooter>
       </Card>
     </form>
   );
