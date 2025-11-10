@@ -21,9 +21,17 @@ export const dynamic = "force-dynamic";
 export const fetchCache = "force-no-store";
 
 export default async function Page({ params }: PageProps) {
-  const cachedPost = (await redis.hgetall(
-    `post:${params.postId}`
-  )) as CachedPost;
+  let cachedPost: CachedPost | null = null;
+  
+  try {
+    const cached = await redis.hgetall(`post:${params.postId}`) as CachedPost;
+    if (cached && Object.keys(cached).length > 0) {
+      cachedPost = cached;
+    }
+  } catch (error) {
+    // Redis connection failed, fall back to database
+    console.error("Redis fetch failed, falling back to database:", error);
+  }
 
   let post: (Post & { votes: Vote[]; author: User }) | null = null;
 
