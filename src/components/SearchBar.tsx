@@ -47,13 +47,19 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
   } = useQuery({
     queryFn: async () => {
       if (input.length === 0) return [];
-      const { data } = await axios.get(`/api/search?q=${input}`);
-      return data as (Subreddit & {
-        _count: Prisma.SubredditCountOutputType;
-      })[];
+      try {
+        const { data } = await axios.get(`/api/search?q=${input}`);
+        return (data || []) as (Subreddit & {
+          _count: Prisma.SubredditCountOutputType;
+        })[];
+      } catch (error) {
+        console.error("Search error:", error);
+        return [];
+      }
     },
-    queryKey: ["search-query"],
+    queryKey: ["search-query", input],
     enabled: false,
+    initialData: [],
   });
 
   useEffect(() => {
@@ -77,7 +83,7 @@ const SearchBar: FC<SearchBarProps> = ({}) => {
 
       {input.length > 0 && (
         <CommandList className="absolute bg-white top-full inset-x-0 shadow rounded-b-md">
-          {isFetched && queryResults && queryResults.length === 0 && (
+          {isFetched && queryResults && Array.isArray(queryResults) && queryResults.length === 0 && (
             <CommandEmpty>No results found.</CommandEmpty>
           )}
           {queryResults &&

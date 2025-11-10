@@ -9,7 +9,7 @@ import { CachedPost } from "@/types/redis";
 import { Post, User, Vote } from "@prisma/client";
 import { ArrowBigDown, ArrowBigUp, Loader2 } from "lucide-react";
 import { notFound } from "next/navigation";
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 
 interface PageProps {
   params: {
@@ -22,9 +22,9 @@ export const fetchCache = "force-no-store";
 
 export default async function Page({ params }: PageProps) {
   let cachedPost: CachedPost | null = null;
-  
+
   try {
-    const cached = await redis.hgetall(`post:${params.postId}`) as CachedPost;
+    const cached = (await redis.hgetall(`post:${params.postId}`)) as CachedPost;
     if (cached && Object.keys(cached).length > 0) {
       cachedPost = cached;
     }
